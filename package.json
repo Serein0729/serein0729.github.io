@@ -1,0 +1,12 @@
+{
+  "name": "v3ry0-security-lab",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx quartz build",
+    "dev": "npx quartz build --serve"
+  },
+  "dependencies": {
+    "quartz": "^4.4.0"
+  }
+}
