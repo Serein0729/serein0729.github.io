@@ -1,15 +1,20 @@
 @echo off
-REM sync-obsidian.bat — Windows 版同步脚本
-REM 双击运行即可
+chcp 65001 >nul
 
-set OBSIDIAN_PUBLISHED=D:\me\SecBrain\06-Output (对外输出)\Published (已发布)
-set BLOG_DOCS=D:\me\blog\docs\posts
+set PUBLISHED=D:\me\SecBrain\06-Output (对外输出)\Published (已发布)
+set POSTS=D:\me\blog\docs\posts
 
-echo 同步 Obsidian Published 到博客...
-if not exist "%BLOG_DOCS%" mkdir "%BLOG_DOCS%"
+rd /S /Q "%POSTS%" 2>nul
+mkdir "%POSTS%"
 
-xcopy /E /Y /I "%OBSIDIAN_PUBLISHED%\*.md" "%BLOG_DOCS%\"
+xcopy /Y "%PUBLISHED%\*.md" "%POSTS%\" >nul 2>&1
 
-echo 同步完成！
-echo 记得 git add . ^&^& git commit ^&^& git push 来发布
+for %%C in (ai-security red-team traditional-security) do (
+    if exist "%PUBLISHED%\%%C" (
+        mkdir "%POSTS%\%%C" 2>nul
+        xcopy /Y /E "%PUBLISHED%\%%C\*.md" "%POSTS%\%%C\" >nul 2>&1
+    )
+)
+
+echo Done!
 pause

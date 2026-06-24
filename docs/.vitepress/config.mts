@@ -12,18 +12,34 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
-      { text: 'AI 安全', link: '/category/ai-security' },
-      { text: '红队', link: '/category/red-team' },
+      { text: 'AI 安全', link: '/posts/ai-security/' },
+      { text: '红队', link: '/posts/red-team/' },
+      { text: '传统安全', link: '/posts/traditional-security/' },
       { text: '关于', link: '/about' },
     ],
 
     sidebar: {
-      '/category/ai-security': [
+      // AI 安全分类
+      '/posts/ai-security/': [
         {
-          text: 'LLM 安全',
+          text: '🤖 AI 安全',
           items: [
-            { text: 'Prompt Injection', link: '/category/ai-security' },
+            // 文章会自动出现在这里，按需添加
           ],
+        },
+      ],
+      // 红队分类
+      '/posts/red-team/': [
+        {
+          text: '⚔️ 红队',
+          items: [],
+        },
+      ],
+      // 传统安全分类
+      '/posts/traditional-security/': [
+        {
+          text: '🛡️ 传统安全',
+          items: [],
         },
       ],
     },
@@ -38,11 +54,6 @@ export default defineConfig({
 
     search: {
       provider: 'local',
-    },
-
-    editLink: {
-      pattern: 'https://github.com/Serein0729/serein0729.github.io/edit/main/docs/:path',
-      text: '在 GitHub 上编辑此页',
     },
   },
 })
