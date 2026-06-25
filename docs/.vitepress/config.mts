@@ -1,4 +1,35 @@
 import { defineConfig } from 'vitepress'
+import fs from 'fs'
+import path from 'path'
+
+// 自动扫描 posts 目录生成侧边栏
+function autoSidebar(postsDir: string) {
+  const sidebar: Record<string, any[]> = {}
+  const categories = fs.readdirSync(postsDir, { withFileTypes: true })
+    .filter(d => d.isDirectory())
+
+  for (const cat of categories) {
+    const catDir = path.join(postsDir, cat.name)
+    const files = fs.readdirSync(catDir)
+      .filter(f => f.endsWith('.md') && f !== 'index.md')
+
+    const items = files.map(f => ({
+      text: f.replace('.md', ''),
+      link: `/posts/${cat.name}/${f.replace('.md', '')}`,
+    }))
+
+    sidebar[`/posts/${cat.name}/`] = [{
+      text: cat.name === 'ai-security' ? '🤖 AI 安全'
+          : cat.name === 'red-team' ? '⚔️ 红队'
+          : '🛡️ 传统安全',
+      items,
+    }]
+  }
+
+  return sidebar
+}
+
+const postsDir = path.resolve(__dirname, '../posts')
 
 export default defineConfig({
   title: "V3ry0's Security Lab",
@@ -18,31 +49,7 @@ export default defineConfig({
       { text: '关于', link: '/about' },
     ],
 
-    sidebar: {
-      // AI 安全分类
-      '/posts/ai-security/': [
-        {
-          text: '🤖 AI 安全',
-          items: [
-            // 文章会自动出现在这里，按需添加
-          ],
-        },
-      ],
-      // 红队分类
-      '/posts/red-team/': [
-        {
-          text: '⚔️ 红队',
-          items: [],
-        },
-      ],
-      // 传统安全分类
-      '/posts/traditional-security/': [
-        {
-          text: '🛡️ 传统安全',
-          items: [],
-        },
-      ],
-    },
+    sidebar: autoSidebar(postsDir),
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/Serein0729' },
