@@ -16,17 +16,50 @@ Get-ChildItem -Path $published -Filter "*.md" -File | ForEach-Object {
     Write-Host "  + $($_.Name)" -ForegroundColor Green
 }
 
-# 复制分类文件夹
-$categories = @("ai-security", "red-team", "traditional-security")
-foreach ($cat in $categories) {
+# 复制分类文件夹并生成索引页
+$categories = @{
+    "ai-security" = @{ title = "AI 安全"; emoji = "🤖" }
+    "red-team" = @{ title = "红队"; emoji = "⚔️" }
+    "traditional-security" = @{ title = "传统安全"; emoji = "🛡️" }
+}
+
+foreach ($cat in $categories.Keys) {
     $src = Join-Path $published $cat
     $dst = Join-Path $posts $cat
     if (Test-Path $src) {
         New-Item -ItemType Directory -Path $dst | Out-Null
-        Get-ChildItem -Path $src -Filter "*.md" -Recurse | ForEach-Object {
+
+        $postLinks = @()
+        Get-ChildItem -Path $src -Filter "*.md" -File | ForEach-Object {
             Copy-Item $_.FullName -Destination $dst
             Write-Host "  + $cat/$($_.Name)" -ForegroundColor Green
+
+            # 从 frontmatter 提取标题，没有则用文件名
+            $content = Get-Content $_.FullName -Raw -Encoding UTF8
+            $title = $_.BaseName
+            if ($content -match '(?m)^title:\s*(.+)$') {
+                $title = $Matches[1].Trim('"').Trim("'")
+            }
+
+            # 生成链接（用文件名，不含中文编码问题）
+            $fileName = $_.Name
+            $postLinks += "- [$title](./$fileName)"
         }
+
+        # 自动生成分类索引页
+        $catInfo = $categories[$cat]
+        $indexContent = @"
+---
+title: $($catInfo.title)
+---
+
+# $($catInfo.emoji) $($catInfo.title)
+
+$($postLinks -join "`n")
+"@
+        $indexPath = Join-Path $dst "index.md"
+        Set-Content -Path $indexPath -Value $indexContent -Encoding UTF8
+        Write-Host "  + $cat/index.md (auto-generated)" -ForegroundColor Yellow
     }
 }
 
