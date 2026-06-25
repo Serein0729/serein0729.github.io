@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "V3ry0"
   text: "Security Lab"
-  tagline: 衍生自 vigil，寓意长久警醒
+  tagline: 风声过后，再无传奇
   actions:
     - theme: brand
       text: AI 安全研究
